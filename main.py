@@ -29,8 +29,10 @@ class RandomPlayer(Player):
     
 class HumanPlayer(Player):
     def move(self):
-        move = input("Rock, paper, scissors? > ") 
-        return move  
+        while True:
+            move = input("Rock, paper, scissors? > ")
+            if move.lower() in ['rock', 'paper', 'scissors']:
+                return move.lower()
 
 
 class ReflectPlayer(RandomPlayer):
