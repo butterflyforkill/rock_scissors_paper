@@ -10,11 +10,16 @@ in this game"""
 
 
 class Player:
+    def __init__(self):
+        self.learned_moves = [] 
+
+
     def move(self):
         return 'rock'
 
+
     def learn(self, my_move, their_move):
-        pass
+        self.learned_moves.append((my_move, their_move)) 
 
 
 class RandomPlayer(Player):
@@ -27,6 +32,26 @@ class HumanPlayer(Player):
         move = input("Rock, paper, scissors? > ") 
         return move  
 
+
+class ReflectPlayer(RandomPlayer):
+    def move(self, round):
+        if len(self.learned_moves) > 0:
+            return self.learned_moves[round - 1][1]
+        else:
+            return super().move()
+
+
+class CyclePlayer(Player):
+    def move(self, round):
+        if len(self.learned_moves) > 0:
+            if self.learned_moves[round - 1][0] == moves[0]:
+                return moves[1]
+            elif self.learned_moves[round - 1][0] == moves[1]:
+                return moves[0]
+            else:
+                return moves[2]                
+        else:
+            return super().move()
 
 def beats(one, two):
     return ((one == 'rock' and two == 'scissors') or
@@ -64,9 +89,9 @@ class Game:
             self.check_win()
     
 
-    def play_round(self):
+    def play_round(self, round):
         move1 = self.p1.move()
-        move2 = self.p2.move()
+        move2 = self.p2.move(round)
         print(f"Player 1: {move1}  Player 2: {move2}")
         self.score(move1, move2)
         print(f"Score: Player One {self.count1}, Player Two {self.count2}")
@@ -77,10 +102,10 @@ class Game:
         print("Game start!")
         for round in range(3):
             print(f"Round {round}:")
-            self.play_round()
+            self.play_round(round)
         print("Game over!")
 
 
 if __name__ == '__main__':
-    game = Game(HumanPlayer(), RandomPlayer())
+    game = Game(HumanPlayer(), CyclePlayer())
     game.play_game()
